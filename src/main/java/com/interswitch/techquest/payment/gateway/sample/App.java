@@ -100,6 +100,36 @@ public class App {
                     System.out.println("===================================");
                     System.out.println("Press any key to contiue, Q to quit");
                     quitFlag = scanner.nextLine();
+                } else if ("2".equals(menuItem)) {
+                    System.out.println("Enter amount in major denomination e.g. 100.00");
+                    String amount = scanner.nextLine();
+
+                    HashMap<String, String> purchaseResponse = doPurchase(PURCHASE_RESOURCE_URL, CLIENT_ACCESS_TOKEN, authData, amount);
+                    int httpResponseCode = Integer.parseInt(purchaseResponse.get(HTTP_CODE));
+                    switch (httpResponseCode) {
+                        case 200:
+                            //
+                            break;
+                        case 202:
+                            //
+                            ObjectMapper mapper = new ObjectMapper();
+                            Map<String, Object> responseBody = new HashMap<String, Object>();
+                            responseBody = mapper.readValue(purchaseResponse.get(RESPONSE_BODY), new TypeReference<Map<String, String>>() {
+                            });
+                            if (responseBody != null && responseBody.containsKey("responseCode")) {
+                                String responseCode = responseBody.get("responseCode").toString();
+                                if (responseCode.equalsIgnoreCase("T0")) {
+                                    System.out.println("Enter your OTP e.g. 958274");
+                                    String otp = scanner.nextLine();
+
+                                    String paymentId = responseBody.get("paymentId").toString();
+                                    doPurchaseAuthOTP(VALIDATION_AUTH_OTP_RESOURCE_URL, CLIENT_ACCESS_TOKEN, otp, paymentId);
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             scanner.close();
@@ -162,22 +192,57 @@ public class App {
 
     public static HashMap<String, String> doValidation(String resourceUrl, String clientAccessToken, String authData) throws Exception {
         String httpMethod = "POST";
-        String currency = "NGN"; // Currency in 3 letter ISO alphabetic code
         String transactionRef = "ISW|API|JAM|" + generateRef(); // unique id to identify each request
-        String request = "{\n" + "\"transactionRef\": \"" + transactionRef
-                + "\", \n" + "\"authData\":\"" + authData
-                + "\", \n" + "\"currency\":\"" + currency
-                + "\" \n" + "}";
+
+        JSONObject jSONObject = new JSONObject();
+        jSONObject.put("authData", authData);
+        jSONObject.put("transactionRef", transactionRef);
+
+        String request = jSONObject.toString();
 
         return doREST(resourceUrl, httpMethod, clientAccessToken, request);
     }
 
     public static HashMap<String, String> doValidationAuthOTP(String resourceUrl, String clientAccessToken, String otp, String transactionRef) throws Exception {
         String httpMethod = "POST";
-        String request = "{\n" + "\"transactionRef\": \"" + transactionRef
-                + "\", \n" + "\"otp\": \"" + otp
-                + "\" \n" + "}";
+
+        JSONObject jSONObject = new JSONObject();
+        jSONObject.put("otp", otp);
+        jSONObject.put("transactionRef", transactionRef);
+
+        String request = jSONObject.toString();
 
         return doREST(resourceUrl, httpMethod, clientAccessToken, request);
     }
+
+    public static HashMap<String, String> doPurchase(String resourceUrl, String clientAccessToken, String authData, String amount) throws Exception {
+        String httpMethod = "POST";
+        String transactionRef = "ISW|API|JAM|" + generateRef();
+        String customerId = "api-jam@interswitchgroup.com";
+        String currency = "NGN"; // Currency in 3 letter ISO alphabetic code
+
+        JSONObject jSONObject = new JSONObject();
+        jSONObject.put("customerId", customerId);
+        jSONObject.put("amount", amount);
+        jSONObject.put("currency", currency);
+        jSONObject.put("authData", authData);
+        jSONObject.put("transactionRef", transactionRef);
+
+        String request = jSONObject.toString();
+
+        return doREST(resourceUrl, httpMethod, clientAccessToken, request);
+    }
+
+    public static HashMap<String, String> doPurchaseAuthOTP(String resourceUrl, String clientAccessToken, String otp, String paymentId) throws Exception {
+        String httpMethod = "POST";
+
+        JSONObject jSONObject = new JSONObject();
+        jSONObject.put("otp", otp);
+        jSONObject.put("paymentId", paymentId);
+
+        String request = jSONObject.toString();
+
+        return doREST(resourceUrl, httpMethod, clientAccessToken, request);
+    }
+
 }
