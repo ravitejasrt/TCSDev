@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.interswitch.techquest.secure.utils.InterswitchAuth;
 import com.interswitch.techquest.secure.utils.TransactionSecurity;
 
 public class TestDriver {
@@ -13,7 +14,7 @@ public class TestDriver {
     public static final String HTTP_CODE = "HTTP_CODE";
     public static final String RESPONSE_BODY = "RESPONSE_BODY";
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args) {
         try {
 
             System.out.println("To leave a field empty, please press enter");
@@ -27,6 +28,8 @@ public class TestDriver {
                 String menuItem = "1";
                 scanner = new Scanner(System.in);
                 menuItem = scanner.nextLine();
+
+                String clientAccessToken = InterswitchAuth.getAccessToken(Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.PASSPORT_RESOURCE_URL);
 
                 System.out.println("");
                 System.out.println("===================================");
@@ -47,7 +50,7 @@ public class TestDriver {
 
                 if ("1".equals(menuItem)) {
 
-                    HashMap<String, String> validateResponse = PaymentGateway.doValidation(authData);
+                    HashMap<String, String> validateResponse = PaymentGateway.doValidation(clientAccessToken, authData);
 
                     int httpResponseCode = Integer.parseInt(validateResponse.get(HTTP_CODE));
                     switch (httpResponseCode) {
@@ -67,7 +70,7 @@ public class TestDriver {
                                     String otp = scanner.nextLine();
 
                                     String transactionRef = responseBody.get("transactionRef").toString();
-                                    PaymentGateway.doValidationAuthOTP(otp, transactionRef);
+                                    PaymentGateway.doValidationAuthOTP(clientAccessToken, otp, transactionRef);
                                 }
                             }
                             break;
@@ -83,7 +86,7 @@ public class TestDriver {
                     System.out.println("Enter amount in major denomination e.g. 100.00");
                     String amount = scanner.nextLine();
 
-                    HashMap<String, String> purchaseResponse = PaymentGateway.doPurchase(authData, amount);
+                    HashMap<String, String> purchaseResponse = PaymentGateway.doPurchase(clientAccessToken, authData, amount);
                     int httpResponseCode = Integer.parseInt(purchaseResponse.get(HTTP_CODE));
                     switch (httpResponseCode) {
                         case 200:
@@ -102,7 +105,7 @@ public class TestDriver {
                                     String otp = scanner.nextLine();
 
                                     String paymentId = responseBody.get("paymentId").toString();
-                                    PaymentGateway.doPurchaseAuthOTP(otp, paymentId);
+                                    PaymentGateway.doPurchaseAuthOTP(clientAccessToken, otp, paymentId);
                                 }
                             }
                             break;
@@ -115,13 +118,12 @@ public class TestDriver {
                     System.out.println("TransactionRef : ");
                     String transactionRef = scanner.nextLine();
 
-                    PaymentGateway.doTransactionQuery(amount, transactionRef);
+                    PaymentGateway.doTransactionQuery(clientAccessToken, amount, transactionRef);
                 }
             }
             scanner.close();
         } catch (Exception ex) {
             ex.printStackTrace();
-            Thread.sleep(50000);
         }
     }
 
