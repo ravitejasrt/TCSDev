@@ -123,13 +123,20 @@ public class App {
                                     String otp = scanner.nextLine();
 
                                     String paymentId = responseBody.get("paymentId").toString();
-                                    doPurchaseAuthOTP(VALIDATION_AUTH_OTP_RESOURCE_URL, CLIENT_ACCESS_TOKEN, otp, paymentId);
+                                    doPurchaseAuthOTP(PURCHASE_AUTH_OTP_RESOURCE_URL, CLIENT_ACCESS_TOKEN, otp, paymentId);
                                 }
                             }
                             break;
                         default:
                             break;
                     }
+                } else if ("3".equals(menuItem)) {
+                    System.out.println("Amount: ");
+                    String amount = scanner.nextLine();
+                    System.out.println("TransactionRef : ");
+                    String transactionRef = scanner.nextLine();
+
+                    doTransactionQuery(PURCHASE_RESOURCE_URL, CLIENT_ACCESS_TOKEN, amount, transactionRef);
                 }
             }
             scanner.close();
@@ -158,11 +165,13 @@ public class App {
         con.setRequestProperty("SignatureMethod", SIGNATURE_METHOD);
         con.setRequestProperty("Signature", securityHeaders.get("SIGNATURE"));
 
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(request);
-        wr.flush();
-        wr.close();
+        if (request != null) {
+            con.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+            wr.writeBytes(request);
+            wr.flush();
+            wr.close();
+        }
 
         int responseCode = con.getResponseCode();
         System.out.println("\nSending " + httpMethod + " request to URL : " + resourceUrl);
@@ -245,4 +254,9 @@ public class App {
         return doREST(resourceUrl, httpMethod, clientAccessToken, request);
     }
 
+    public static HashMap<String, String> doTransactionQuery(String resourceUrl, String clientAccessToken, String amount, String transactionRef) throws Exception {
+        String httpMethod = "GET";
+
+        return doREST(resourceUrl, httpMethod, clientAccessToken, null);
+    }
 }
