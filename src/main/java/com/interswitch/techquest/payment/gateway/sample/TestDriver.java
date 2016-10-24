@@ -45,8 +45,8 @@ public class TestDriver {
                 System.out.println("Enter PIN. Press enter to ignore: ");
                 String pin = scanner.nextLine();
 
-                String certFilePath = "C:\\Users\\abiola.adebanjo\\Documents\\isw-api-jam\\paymentgateway.crt";
-                String authData = TransactionSecurity.generateAuthData("1", pan, pin, expiryDate, cvv, certFilePath);
+                
+                String authData = TransactionSecurity.generateAuthData("1", pan, pin, expiryDate, cvv, Constants.CERTIFICATE_FILE_PATH);
 
                 if ("1".equals(menuItem)) {
 

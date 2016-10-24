@@ -24,4 +24,6 @@ public class Constants {
     public static final String SIGNATURE_METHOD = "SHA-256";
     public static final String HTTP_CODE = "HTTP_CODE";
     public static final String RESPONSE_BODY = "RESPONSE_BODY";
+    
+    public static String CERTIFICATE_FILE_PATH = "C:\\Users\\abiola.adebanjo\\Documents\\isw-api-jam\\paymentgateway.crt";  
 }
