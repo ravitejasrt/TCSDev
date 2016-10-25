@@ -7,6 +7,7 @@ import java.util.Scanner;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.interswitch.techquest.secure.utils.InterswitchAuth;
+import com.interswitch.techquest.secure.utils.Passport;
 import com.interswitch.techquest.secure.utils.TransactionSecurity;
 
 public class TestDriver {
@@ -29,7 +30,7 @@ public class TestDriver {
                 scanner = new Scanner(System.in);
                 menuItem = scanner.nextLine();
 
-                String clientAccessToken = InterswitchAuth.getAccessToken(Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.PASSPORT_RESOURCE_URL);
+                String clientAccessToken = Passport.getClientAccessToken(Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.PASSPORT_RESOURCE_URL);
 
                 if ("3".equals(menuItem)) {
                     System.out.println("");
@@ -56,7 +57,7 @@ public class TestDriver {
                 System.out.println("Enter PIN. Press enter to ignore: ");
                 String pin = scanner.nextLine();
 
-                String authData = TransactionSecurity.generateAuthData("1", pan, pin, expiryDate, cvv, Constants.CERTIFICATE_FILE_PATH);
+                String authData = TransactionSecurity.getAuthData("1", pan, pin, expiryDate, cvv, Constants.CERTIFICATE_FILE_PATH);
 
                 if ("1".equals(menuItem)) {
 
