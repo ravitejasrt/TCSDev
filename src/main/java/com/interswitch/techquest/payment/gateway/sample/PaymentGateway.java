@@ -57,9 +57,9 @@ public class PaymentGateway {
         try {
             in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         } catch (Exception ex) {
-            ex.printStackTrace();
+//            ex.printStackTrace();
             in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
-            throw ex;
+//            throw ex;
         }
 
         String inputLine;
@@ -134,7 +134,7 @@ public class PaymentGateway {
 
     public static HashMap<String, String> doTransactionQuery(String clientAccessToken, String amount, String transactionRef) throws Exception {
         String httpMethod = "GET";
-        String transactionQueryUrl = Constants.PURCHASE_RESOURCE_URL + "?amount=" + amount + "&ransactionRef=" + transactionRef;
+        String transactionQueryUrl = Constants.PURCHASE_RESOURCE_URL + "?amount=" + amount + "&transactionRef=" + transactionRef;
 
         return doREST(clientAccessToken, transactionQueryUrl, httpMethod, null);
     }

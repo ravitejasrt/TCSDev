@@ -31,6 +31,17 @@ public class TestDriver {
 
                 String clientAccessToken = InterswitchAuth.getAccessToken(Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.PASSPORT_RESOURCE_URL);
 
+                if ("3".equals(menuItem)) {
+                    System.out.println("");
+                    System.out.println("===================================");
+                    System.out.println("Amount: ");
+                    String amount = scanner.nextLine();
+                    System.out.println("TransactionRef : ");
+                    String transactionRef = scanner.nextLine();
+
+                    PaymentGateway.doTransactionQuery(clientAccessToken, amount, transactionRef);
+                }
+
                 System.out.println("");
                 System.out.println("===================================");
                 System.out.println("Enter your PAN: ");
@@ -45,7 +56,6 @@ public class TestDriver {
                 System.out.println("Enter PIN. Press enter to ignore: ");
                 String pin = scanner.nextLine();
 
-                
                 String authData = TransactionSecurity.generateAuthData("1", pan, pin, expiryDate, cvv, Constants.CERTIFICATE_FILE_PATH);
 
                 if ("1".equals(menuItem)) {
@@ -112,13 +122,6 @@ public class TestDriver {
                         default:
                             break;
                     }
-                } else if ("3".equals(menuItem)) {
-                    System.out.println("Amount: ");
-                    String amount = scanner.nextLine();
-                    System.out.println("TransactionRef : ");
-                    String transactionRef = scanner.nextLine();
-
-                    PaymentGateway.doTransactionQuery(clientAccessToken, amount, transactionRef);
                 }
             }
             scanner.close();
